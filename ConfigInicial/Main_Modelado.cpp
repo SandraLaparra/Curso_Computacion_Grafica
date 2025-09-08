@@ -1,31 +1,30 @@
+﻿//Práctica 4
+//Sandra Laparra Miranda
+//Fecha de entrega : 7 de septiembre de 2025
+//Número de cuenta : 311243563
 #include<iostream>
 
 //#define GLEW_STATIC
 
 #include <GL/glew.h>
-
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
-
 // Shaders
 #include "Shader.h"
 
-void Inputs(GLFWwindow *window);
-
+void Inputs(GLFWwindow* window);
 
 const GLint WIDTH = 800, HEIGHT = 600;
-float movX=0.0f;
-float movY=0.0f;
-float movZ=-5.0f;
+float movX = 0.0f;
+float movY = 0.0f;
+float movZ = -5.0f;
 float rot = 0.0f;
 int main() {
 	glfwInit();
-	//Verificaci�n de compatibilidad 
+	//Verificación de compatibilidad 
 	// Set all the required options for GLFW
 	/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -34,13 +33,13 @@ int main() {
 
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Modelado geometrico", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 4 Sandra Laparra", nullptr, nullptr);
 
 	int screenWidth, screenHeight;
 
 	glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
 
-	//Verificaci�n de errores de creacion  ventana
+	//Verificación de errores de creacion  ventana
 	if (nullptr == window)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -52,13 +51,18 @@ int main() {
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 
-	//Verificaci�n de errores de inicializaci�n de glew
+	//Verificación de errores de inicialización de glew
 
 	if (GLEW_OK != glewInit()) {
 		std::cout << "Failed to initialise GLEW" << std::endl;
 		return EXIT_FAILURE;
 	}
 
+	// Imprimimos informacin de OpenGL del sistema
+	std::cout << "> Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "> Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	std::cout << "> Renderer: " << glGetString(GL_RENDERER) << std::endl;
+	std::cout << "> SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
 
 	// Define las dimensiones del viewport
 	glViewport(0, 0, screenWidth, screenHeight);
@@ -78,7 +82,7 @@ int main() {
 
 	// Set up vertex data (and buffer(s)) and attribute pointers
 
-	
+
 
 	// use with Perspective Projection
 	float vertices[] = {
@@ -88,35 +92,35 @@ int main() {
 		0.5f,  0.5f, 0.5f,  1.0f, 0.0f,0.0f,
 		-0.5f,  0.5f, 0.5f, 1.0f, 0.0f,0.0f,
 		-0.5f, -0.5f, 0.5f, 1.0f, 0.0f,0.0f,
-		
-	    -0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,//Back
+
+		-0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,//Back
 		 0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,
 		 0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
 		 0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-	    -0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-	    -0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,
-		
+		-0.5f,  0.5f,-0.5f, 0.0f, 1.0f,0.0f,
+		-0.5f, -0.5f,-0.5f, 0.0f, 1.0f,0.0f,
+
 		 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,1.0f,
 		 0.5f, -0.5f, -0.5f,  0.0f, 0.0f,1.0f,
 		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,1.0f,
 		 0.5f,  0.5f, -0.5f,  0.0f, 0.0f,1.0f,
 		 0.5f,  0.5f,  0.5f,  0.0f, 0.0f,1.0f,
 		 0.5f,  -0.5f, 0.5f, 0.0f, 0.0f,1.0f,
-      
+
 		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,
 		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,0.0f,
 		-0.5f, -0.5f, -0.5f,  1.0f, 1.0f,0.0f,
 		-0.5f, -0.5f, -0.5f,  1.0f, 1.0f,0.0f,
 		-0.5f, -0.5f,  0.5f,  1.0f, 1.0f,0.0f,
 		-0.5f,  0.5f,  0.5f,  1.0f, 1.0f,0.0f,
-		
+
 		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,1.0f,
 		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,1.0f,
 		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,1.0f,
 		0.5f, -0.5f,  0.5f,  0.0f, 1.0f,1.0f,
 		-0.5f, -0.5f,  0.5f, 0.0f, 1.0f,1.0f,
 		-0.5f, -0.5f, -0.5f, 0.0f, 1.0f,1.0f,
-		
+
 		-0.5f,  0.5f, -0.5f, 1.0f, 0.2f,0.5f,
 		0.5f,  0.5f, -0.5f,  1.0f, 0.2f,0.5f,
 		0.5f,  0.5f,  0.5f,  1.0f, 0.2f,0.5f,
@@ -146,11 +150,11 @@ int main() {
 	// 4. Despues colocamos las caracteristicas de los vertices
 
 	//Posicion
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)0);
 	glEnableVertexAttribArray(0);
 
 	//Color
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)(3 * sizeof(GLfloat)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -158,14 +162,16 @@ int main() {
 
 	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
 
-	
-	glm::mat4 projection=glm::mat4(1);
+
+	glm::mat4 projection = glm::mat4(1);
 
 	projection = glm::perspective(glm::radians(45.0f), (GLfloat)screenWidth / (GLfloat)screenHeight, 0.1f, 100.0f);//FOV, Radio de aspecto,znear,zfar
 	//projection = glm::ortho(0.0f, (GLfloat)screenWidth, 0.0f, (GLfloat)screenHeight, 0.1f, 1000.0f);//Izq,Der,Fondo,Alto,Cercania,Lejania
 	while (!glfwWindowShouldClose(window))
 	{
-		
+		// Para ponerle color al gato
+		GLint indiceColor = glGetUniformLocation(ourShader.Program, "objetoColor");
+
 		Inputs(window);
 		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
 		glfwPollEvents();
@@ -173,16 +179,16 @@ int main() {
 		// Render
 		// Clear the colorbuffer
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
 		// Draw our first triangle
 		ourShader.Use();
-		glm::mat4 model=glm::mat4(1);
-		glm::mat4 view=glm::mat4(1);
-	
+		glm::mat4 model = glm::mat4(1);
+		glm::mat4 view = glm::mat4(1);
 
-		view = glm::translate(view, glm::vec3(movX,movY, movZ));
+
+		view = glm::translate(view, glm::vec3(movX, movY, movZ));
 		view = glm::rotate(view, glm::radians(rot), glm::vec3(0.0f, 1.0f, 0.0f));
 
 		GLint modelLoc = glGetUniformLocation(ourShader.Program, "model");
@@ -193,51 +199,269 @@ int main() {
 		glUniformMatrix4fv(projecLoc, 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-	
+
 
 		glBindVertexArray(VAO);
-	
-		//Superficie de la mesa
-	    model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(2.0f, 0.1f, 3.0f)); //Ancho, grosor, profundidad
-		model = glm::translate(model, glm::vec3(0.0f, 0.9f, 0.0f));
+
+		// Transformación para centrar al gato más bajo
+		glm::mat4 base = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+		// ============================
+		// Cabeza
+		// ============================
+
+		// Cabeza principal
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.6f, 0.2f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Orejas
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.4f, 0.6f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.6f, 0.2f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = base;
+		model = glm::translate(model, glm::vec3(0.4f, 0.6f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.6f, 0.2f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Ojos y pupilas
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.2f, 0.1f, 0.51f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 1.0f, 1.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.2f, 0.1f, 0.56f));
+		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.0f, 0.0f, 0.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = base;
+		model = glm::translate(model, glm::vec3(0.2f, 0.1f, 0.51f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 1.0f, 1.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = base;
+		model = glm::translate(model, glm::vec3(0.2f, 0.1f, 0.56f));
+		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.0f, 0.0f, 0.0f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Mejillas
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.4f, -0.1f, 0.51f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		model = base;
+		model = glm::translate(model, glm::vec3(0.4f, -0.1f, 0.51f));
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Nariz
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, -0.1f, 0.55f));
+		model = glm::scale(model, glm::vec3(0.15f, 0.1f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.5f, 0.5f, 0.5f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Boca
+		for (int i = 0; i < 3; i++) {
+			model = base;
+			model = glm::translate(model, glm::vec3(-0.1f - 0.05f * i, -0.25f + 0.05f * i, 0.55f));
+			model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glUniform3f(indiceColor, 0.0f, 0.0f, 0.0f);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+		for (int i = 0; i < 3; i++) {
+			model = base;
+			model = glm::translate(model, glm::vec3(0.1f + 0.05f * i, -0.25f + 0.05f * i, 0.55f));
+			model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+			glUniform3f(indiceColor, 0.0f, 0.0f, 0.0f);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		// ============================
+		// Cuello 
+		// ============================
+
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, -0.9f, 0.0f));  // más abajo
+		model = glm::scale(model, glm::vec3(0.4f, 0.8f, 0.4f));       // delgado y alargado
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.7f, 0.4f);  // un poco más claro
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// ============================
+		// Cuerpo
+		// ============================
+
+		// Parte inferior (cuerpo principal)
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, -1.5f, 0.0f));  // antes -1.6f
+		model = glm::scale(model, glm::vec3(1.0f, 1.6f, 0.8f));       // altura moderada
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.6f, 0.2f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Pecho claro
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, -1.3f, 0.41f));
+		model = glm::scale(model, glm::vec3(0.4f, 0.9f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Franja clara horizontal
+		model = base;
+		model = glm::translate(model, glm::vec3(0.0f, -2.1f, 0.41f));
+		model = glm::scale(model, glm::vec3(1.0f, 0.25f, 0.05f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// ============================
+		// Patas delanteras
+		// ============================
+
+		// Pata izquierda
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.3f, -2.12f, 0.25f));
+		model = glm::scale(model, glm::vec3(0.45f, 0.35f, 0.6f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.82f, 0.71f, 0.55f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// Pata derecha
+		model = base;
+		model = glm::translate(model, glm::vec3(0.3f, -2.12f, 0.25f));
+		model = glm::scale(model, glm::vec3(0.45f, 0.35f, 0.6f));
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.82f, 0.71f, 0.55f);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// ============================
+		// Cubos laterales que forman la pata trasera
+		// ============================
 		
-		//Pata 1
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.1f, 0.4f, 0.1f)); //Tama�o de la pata
-		model = glm::translate(model, glm::vec3(4.9f, -0.5f, 3.9f)); //Posiciona la pata
+		// base
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.725f, -2.13, 0.0f));
+		model = glm::scale(model, glm::vec3(0.45f, 0.35f, 0.8f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//Pata 2
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.1f, 0.4f, 0.1f)); 
-		model = glm::translate(model, glm::vec3(-4.9f, -0.5f, 3.9f)); 
+		// primer cubo
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.725f, -1.65, -0.15f));
+		model = glm::scale(model, glm::vec3(0.45f, 0.59f, 0.5f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.82f, 0.71f, 0.55f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//Pata 3
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.1f, 0.4f, 0.1f));
-		model = glm::translate(model, glm::vec3(-4.9f, -0.5f, -3.9f));
+		// segundo cubo
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.63f, -1.24f, -0.15f));
+		model = glm::scale(model, glm::vec3(0.25f, 0.23f, 0.5f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 1.0f, 0.9f, 0.7f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		//Pata 4
-		model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(0.1f, 0.4f, 0.1f));
-		model = glm::translate(model, glm::vec3(4.9f, -0.5f, -3.9f));
+
+		// tercer cubo
+		model = base;
+		model = glm::translate(model, glm::vec3(-0.61f, -1.01f, -0.15f));
+		model = glm::scale(model, glm::vec3(0.15f, 0.23f, 0.5f));
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		glUniform3f(indiceColor, 0.82f, 0.71f, 0.55f);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+		// ============================
+		// Cola
+		// ============================
+
+		{
+			const glm::vec3 colorNaranja = glm::vec3(1.0f, 0.6f, 0.2f);
+			const glm::vec3 colorCrema = glm::vec3(1.0f, 0.9f, 0.7f);
+
+			const int   tramosAtras = 2;   // cubos hacia atrás
+			const int   tramosArriba = 5;   // cubos hacia arriba 
+			const float tam = 0.35f;	// tamaño de cada cubo
+			const float pasoY = 0.30f; // cuánto sube cada cubo en Y
+			const float pasoZ = 0.15f; // desplazamiento hacia atrás en Z
+			const float desviacionX = -0.45f; // inclinación hacia la izquierda
+
+			glm::mat4 acumulado = base; // a partir de esta matriz se irán acumulando los movimientos de cada cubo que forman la cola
+			acumulado = glm::translate(acumulado, glm::vec3(0.0f, -1.8f, -0.6f));
+
+			int index = 0;
+
+			// Parte hacia atrás 
+			for (int i = 0; i < tramosAtras; ++i) {
+				model = acumulado;
+				model = glm::scale(model, glm::vec3(tam, tam, tam));
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+				if (index % 2 == 0) 
+					glUniform3f(indiceColor, colorNaranja.r, colorNaranja.g, colorNaranja.b);
+				else                
+					glUniform3f(indiceColor, colorCrema.r, colorCrema.g, colorCrema.b);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+
+				acumulado = glm::translate(acumulado, glm::vec3(0.0f, 0.0f, -pasoZ)); // hacia atrás
+				index++;
+			}
+
+			// Parte hacia arriba con giro a la izquierda
+			for (int i = 0; i < tramosArriba; ++i) {
+				model = acumulado;
+				model = glm::scale(model, glm::vec3(tam, tam, tam));
+				glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+				if (index % 2 == 0) 
+					glUniform3f(indiceColor, colorNaranja.r, colorNaranja.g, colorNaranja.b);
+				else                
+					glUniform3f(indiceColor, colorCrema.r, colorCrema.g, colorCrema.b);
+
+				glDrawArrays(GL_TRIANGLES, 0, 36);
+
+				// Subir + giro a la izquierda
+				acumulado = glm::translate(acumulado, glm::vec3(desviacionX, pasoY, 0.0f));
+				index++;
+			}
+		}
+
 
 		glBindVertexArray(0);
-				
+
 
 		// Swap the screen buffers
 		glfwSwapBuffers(window);
-	
+
 	}
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -245,27 +469,27 @@ int main() {
 
 	glfwTerminate();
 	return EXIT_SUCCESS;
- }
+}
 
- void Inputs(GLFWwindow *window) {
-	 if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)  //GLFW_RELEASE
-		 glfwSetWindowShouldClose(window, true);
-	 if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		 movX += 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		 movX -= 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
-		 movY += 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
-		 movY -= 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		 movZ -= 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		 movZ += 0.08f;
-	 if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-		 rot += 0.4f;
-	 if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-		 rot -= 0.4f;
- }
+void Inputs(GLFWwindow* window) {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)  //GLFW_RELEASE
+		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		movX += 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		movX -= 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_PAGE_UP) == GLFW_PRESS)
+		movY += 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_PAGE_DOWN) == GLFW_PRESS)
+		movY -= 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		movZ -= 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		movZ += 0.08f;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		rot += 0.4f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		rot -= 0.4f;
+}
 
 
