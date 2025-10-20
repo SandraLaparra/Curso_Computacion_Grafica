@@ -1,6 +1,5 @@
 #version 330 core
 
-// --- VALOR ACTUALIZADO ---
 #define NUMBER_OF_POINT_LIGHTS 17
 
 out vec4 FragColor;
