@@ -1,10 +1,11 @@
-//Previo 12
+//Práctica 12
 //Sandra Laparra Miranda
-//Fecha de entrega: 4 de noviembre de 2025
+//Fecha de entrega: 9 de noviembre de 2025
 //Número de cuenta: 311243563
 
 #include <iostream>
 #include <cmath>
+#include <fstream>  //Para guardar y cargar de archivos 
 
 // GLEW
 #include <GL/glew.h>
@@ -35,6 +36,8 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode
 void MouseCallback(GLFWwindow* window, double xPos, double yPos);
 void DoMovement();
 void Animation();
+void saveFramesToFile(const char* filename); //Guardar en formato .txt animación precargada
+void loadFramesFromFile(const char* filename); 
 
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
@@ -59,7 +62,7 @@ glm::vec3 pointLightPositions[] = {
 };
 
 float vertices[] = {
-	//... (Vértices del cubo, sin cambios)
+	
 	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 	   0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 	   0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -157,7 +160,7 @@ typedef struct _frame {
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
-int FrameIndex = 0;			
+int FrameIndex = 0;
 bool play = false;
 int playIndex = 0;
 
@@ -170,7 +173,7 @@ void saveFrame(void)
 	KeyFrame[FrameIndex].dogPosZ = dogPosZ;
 
 	KeyFrame[FrameIndex].rotDog = rotDog;
-	KeyFrame[FrameIndex].dogRotX = dogRotX; 
+	KeyFrame[FrameIndex].dogRotX = dogRotX;
 	KeyFrame[FrameIndex].head = head;
 
 	KeyFrame[FrameIndex].tail = tail;
@@ -189,7 +192,7 @@ void resetElements(void)
 	dogPosZ = KeyFrame[0].dogPosZ;
 	head = KeyFrame[0].head;
 	rotDog = KeyFrame[0].rotDog;
-	dogRotX = KeyFrame[0].dogRotX; 
+	dogRotX = KeyFrame[0].dogRotX;
 
 	tail = KeyFrame[0].tail;
 	fLegL = KeyFrame[0].fLegL;
@@ -204,7 +207,7 @@ void interpolation(void)
 	KeyFrame[playIndex].incZ = (KeyFrame[playIndex + 1].dogPosZ - KeyFrame[playIndex].dogPosZ) / i_max_steps;
 
 	KeyFrame[playIndex].rotDogInc = (KeyFrame[playIndex + 1].rotDog - KeyFrame[playIndex].rotDog) / i_max_steps;
-	KeyFrame[playIndex].dogRotXInc = (KeyFrame[playIndex + 1].dogRotX - KeyFrame[playIndex].dogRotX) / i_max_steps; 
+	KeyFrame[playIndex].dogRotXInc = (KeyFrame[playIndex + 1].dogRotX - KeyFrame[playIndex].dogRotX) / i_max_steps;
 	KeyFrame[playIndex].headInc = (KeyFrame[playIndex + 1].head - KeyFrame[playIndex].head) / i_max_steps;
 
 	KeyFrame[playIndex].tailInc = (KeyFrame[playIndex + 1].tail - KeyFrame[playIndex].tail) / i_max_steps;
@@ -212,6 +215,96 @@ void interpolation(void)
 	KeyFrame[playIndex].fLegRInc = (KeyFrame[playIndex + 1].fLegR - KeyFrame[playIndex].fLegR) / i_max_steps;
 	KeyFrame[playIndex].bLegLInc = (KeyFrame[playIndex + 1].bLegL - KeyFrame[playIndex].bLegL) / i_max_steps;
 	KeyFrame[playIndex].bLegRInc = (KeyFrame[playIndex + 1].bLegR - KeyFrame[playIndex].bLegR) / i_max_steps;
+}
+
+
+void saveFramesToFile(const char* filename)
+{
+	//Abrir un archivo de salida 
+	std::ofstream outFile(filename);
+
+	if (!outFile.is_open())
+	{
+		std::cout << "Error: No se pudo abrir el archivo " << filename << " para escribir." << std::endl;
+		return;
+	}
+
+	//Escribir el número de frames
+	outFile << FrameIndex << std::endl;
+
+	//Recorrer y escribir los datos de cada keyframe
+	for (int i = 0; i < FrameIndex; i++)
+	{
+		outFile << KeyFrame[i].dogPosX << " ";
+		outFile << KeyFrame[i].dogPosY << " ";
+		outFile << KeyFrame[i].dogPosZ << " ";
+		outFile << KeyFrame[i].rotDog << " ";
+		outFile << KeyFrame[i].dogRotX << " ";
+		outFile << KeyFrame[i].head << " ";
+		outFile << KeyFrame[i].tail << " ";
+		outFile << KeyFrame[i].fLegL << " ";
+		outFile << KeyFrame[i].fLegR << " ";
+		outFile << KeyFrame[i].bLegL << " ";
+		outFile << KeyFrame[i].bLegR << std::endl;
+	}
+
+	//Cerrar el archivo
+	outFile.close();
+	std::cout << "¡Keyframes guardados exitosamente en " << filename << "!" << std::endl;
+}
+
+
+
+void loadFramesFromFile(const char* filename)
+{
+	//Abrir un archivo de entrada 
+	std::ifstream inFile(filename);
+
+	if (!inFile.is_open())
+	{
+		std::cout << "Error: No se pudo abrir el archivo " << filename << " para leer." << std::endl;
+		return;
+	}
+
+	//Leer el número de frames
+	int framesToLoad = 0;
+	inFile >> framesToLoad;
+
+	if (framesToLoad > MAX_FRAMES)
+	{
+		std::cout << "Error: El archivo tiene más frames (" << framesToLoad
+			<< ") que el máximo permitido (" << MAX_FRAMES << ")" << std::endl;
+		inFile.close();
+		return;
+	}
+
+	//Recorrer y leer los datos de cada keyframe
+	for (int i = 0; i < framesToLoad; i++)
+	{
+		
+		inFile >> KeyFrame[i].dogPosX;
+		inFile >> KeyFrame[i].dogPosY;
+		inFile >> KeyFrame[i].dogPosZ;
+		inFile >> KeyFrame[i].rotDog;
+		inFile >> KeyFrame[i].dogRotX;
+		inFile >> KeyFrame[i].head;
+		inFile >> KeyFrame[i].tail;
+		inFile >> KeyFrame[i].fLegL;
+		inFile >> KeyFrame[i].fLegR;
+		inFile >> KeyFrame[i].bLegL;
+		inFile >> KeyFrame[i].bLegR;
+	}
+
+	//Actualizar el contador de frames
+	FrameIndex = framesToLoad;
+
+	//Cerrar el archivo
+	inFile.close();
+
+	//Resetear la posición del perro al nuevo Frame 0
+	resetElements();
+
+	std::cout << "¡Keyframes cargados exitosamente desde " << filename << "!" << std::endl;
 }
 
 
@@ -225,7 +318,7 @@ int main()
 	// Init GLFW
 	glfwInit();
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Previo 12 Sandra Laparra", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 12 Sandra Laparra", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -290,8 +383,8 @@ int main()
 		KeyFrame[i].incZ = 0;
 		KeyFrame[i].rotDog = 0;
 		KeyFrame[i].rotDogInc = 0;
-		KeyFrame[i].dogRotX = 0; 
-		KeyFrame[i].dogRotXInc = 0; 
+		KeyFrame[i].dogRotX = 0;
+		KeyFrame[i].dogRotXInc = 0;
 		KeyFrame[i].head = 0;
 		KeyFrame[i].headInc = 0;
 		KeyFrame[i].tail = 0;
@@ -313,24 +406,24 @@ int main()
 	KeyFrame[1].bLegL = -90.0f;		//Dobla pata trasera izq. hacia adelante
 	KeyFrame[1].bLegR = 90.0f;		//Dobla pata trasera der. hacia adelante
 
-	KeyFrame[1].fLegL = -30.0f;		
-	KeyFrame[1].fLegR = -30.0f;		
+	KeyFrame[1].fLegL = -30.0f;
+	KeyFrame[1].fLegR = -30.0f;
 
 	KeyFrame[1].head = 0.0f;
-	KeyFrame[1].tail = -10.0f;		
+	KeyFrame[1].tail = -10.0f;
 
 	//Frame 2: Mantener sentado
-	KeyFrame[2] = KeyFrame[1]; 
+	KeyFrame[2] = KeyFrame[1];
 	KeyFrame[2].tail = 10.0f; //Mueve la cola
 
 	//Frame 3: Levantar pata para saludar
-	KeyFrame[3] = KeyFrame[2];  
+	KeyFrame[3] = KeyFrame[2];
 	KeyFrame[3].fLegR = 70.0f;  //Levanta Pata Derecha 
 	KeyFrame[3].head = 0.0f;
 	KeyFrame[3].tail = -10.0f;
 
 	//Frame 4: Mantener pata levantada
-	KeyFrame[4] = KeyFrame[3]; 
+	KeyFrame[4] = KeyFrame[3];
 	KeyFrame[4].tail = 10.0f; //Mueve la cola
 
 	//Frame 5: Bajar pata
@@ -344,7 +437,7 @@ int main()
 	//Frame 7: Mantener de pie
 	KeyFrame[7] = KeyFrame[0]; //Mantiene posición inicial
 
-	FrameIndex = 8; 
+	FrameIndex = 8;
 
 
 	// First, set the container's VAO (and VBO)
@@ -659,7 +752,7 @@ void DoMovement()
 	{
 		bLegR -= 1.0f;
 	}
-	
+
 
 
 	// Camera controls
@@ -683,7 +776,7 @@ void DoMovement()
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
 
-	//(Controles de luz, sin cambios)
+	
 	if (keys[GLFW_KEY_T])
 	{
 		pointLightPositions[0].x += 0.01f;
@@ -713,74 +806,81 @@ void DoMovement()
 
 }
 
+
 // Is called whenever a key is pressed/released via GLFW
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
-
-	if (keys[GLFW_KEY_L])
+	//Manejar eventos de una sola pulsación (PRESS)
+	if (action == GLFW_PRESS)
 	{
-		if (play == false && (FrameIndex > 1))
+		if (key == GLFW_KEY_L) //Play/Stop
 		{
-
-			resetElements();
-			//First Interpolation				
-			interpolation();
-
-			play = true;
-			playIndex = 0;
-			i_curr_steps = 0;
-		}
-		else
-		{
-			play = false;
-		}
-
-	}
-
-	if (keys[GLFW_KEY_K])
-	{
-		if (FrameIndex < MAX_FRAMES)
-		{
-			saveFrame();
+			if (play == false && (FrameIndex > 1))
+			{
+				resetElements();
+				interpolation(); //Primera interpolación
+				play = true;
+				playIndex = 0;
+				i_curr_steps = 0;
+			}
+			else
+			{
+				play = false;
+			}
 		}
 
+		if (key == GLFW_KEY_K) // Guardar frame en memoria
+		{
+			if (FrameIndex < MAX_FRAMES)
+			{
+				saveFrame();
+			}
+		}
+
+		if (key == GLFW_KEY_P) // Guardar frames en archivo
+		{
+			saveFramesToFile("keyframes.txt");
+		}
+
+		//Bloque que implementa la carga de archivo llamado keyframes.txt
+		if (key == GLFW_KEY_O)
+		{
+			loadFramesFromFile("keyframes.txt");
+		}
+
+
+		if (key == GLFW_KEY_SPACE)
+		{
+			active = !active;
+			if (active)
+				Light1 = glm::vec3(0.2f, 0.8f, 1.0f);
+			else
+				Light1 = glm::vec3(0);
+		}
+
+		if (key == GLFW_KEY_ESCAPE)
+		{
+			glfwSetWindowShouldClose(window, GL_TRUE);
+		}
 	}
 
-
-
-	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
-	{
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	}
-
+	// Manejar estado de teclas (PRESS/RELEASE) para movimiento continuo
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)
 		{
 			keys[key] = true;
 		}
-		else if (action == GLFW_RELEASE)
+		else if (action ==
+			GLFW_RELEASE)
 		{
 			keys[key] = false;
 		}
 	}
-
-	if (keys[GLFW_KEY_SPACE])
-	{
-		active = !active;
-		if (active)
-		{
-			Light1 = glm::vec3(0.2f, 0.8f, 1.0f);
-
-		}
-		else
-		{
-			Light1 = glm::vec3(0);
-		}
-	}
-
-
 }
+
+
+
 void Animation() {
 
 	if (play)
@@ -809,9 +909,9 @@ void Animation() {
 			dogPosZ += KeyFrame[playIndex].incZ;
 			head += KeyFrame[playIndex].headInc;
 			rotDog += KeyFrame[playIndex].rotDogInc;
-			dogRotX += KeyFrame[playIndex].dogRotXInc; 
+			dogRotX += KeyFrame[playIndex].dogRotXInc;
 
-			
+
 			tail += KeyFrame[playIndex].tailInc;
 			fLegL += KeyFrame[playIndex].fLegLInc;
 			fLegR += KeyFrame[playIndex].fLegRInc;
